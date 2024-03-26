@@ -11,12 +11,11 @@ public:
 		float dot(Vector2 other);
 	};
 
-	const std::vector<int> permutationTable = generatePermutationTable();
-
+	const std::vector<unsigned char> permutationTable = generatePermutationTable();
 
 	float noise2D(const float& x, const float& y);
-	std::vector<int> generatePermutationTable();
+	std::vector<unsigned char> generatePermutationTable();
 
-	//lerp, fade, getConstantVector, MakePermutation, Shuffle
+
 };
 

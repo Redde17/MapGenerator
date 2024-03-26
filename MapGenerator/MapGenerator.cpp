@@ -14,8 +14,8 @@ float MapGenerator::Vector2::dot(Vector2 other) {
 //MapGenerator class implementation
 
 //internal functions signture
-void shuffle(std::vector<int>& vector);
-MapGenerator::Vector2 getConstantVector(const int& permutationValue);
+void shuffle(std::vector<unsigned char>& vector);
+MapGenerator::Vector2 getConstantVector(const unsigned char& permutationValue);
 float fade(const float& t);
 float lerp(const float& t, const float& a1, const float& a2);
 
@@ -41,6 +41,7 @@ float MapGenerator::noise2D(const float& x, const float& y) {
 	const auto valueBottomRight = permutationTable[permutationTable[X + 1] + Y];
 	const auto valueBottomLeft = permutationTable[permutationTable[X] + Y];
 
+
 	const auto dotTopRight = topRight.dot(getConstantVector(valueTopRight));
 	const auto dotTopLeft = topLeft.dot(getConstantVector(valueTopLeft));
 	const auto dotBottomRight = bottomRight.dot(getConstantVector(valueBottomRight));
@@ -55,8 +56,8 @@ float MapGenerator::noise2D(const float& x, const float& y) {
 	);
 }
 
-std::vector<int> MapGenerator::generatePermutationTable() {
-	std::vector<int> permutationTable;
+std::vector<unsigned char> MapGenerator::generatePermutationTable() {
+	std::vector<unsigned char> permutationTable;
 	for (int i = 0; i < 256; i++)
 		permutationTable.push_back(i);
 
@@ -69,7 +70,7 @@ std::vector<int> MapGenerator::generatePermutationTable() {
 	return permutationTable;
 }
 
-void shuffle(std::vector<int>& vector) {
+void shuffle(std::vector<unsigned char>& vector) {
 	srand(time(NULL));
 
 	/*
@@ -93,16 +94,21 @@ void shuffle(std::vector<int>& vector) {
 	}
 }
 
-MapGenerator::Vector2 getConstantVector(const int& permutationValue) {
+const MapGenerator::Vector2 constVectorPP(1.0, 1.0);
+const MapGenerator::Vector2 constVectorMP(-1.0, 1.0);
+const MapGenerator::Vector2 constVectorMM(-1.0, -1.0);
+const MapGenerator::Vector2 constVectorPM(1.0, -1.0);
+
+MapGenerator::Vector2 getConstantVector(const unsigned char& permutationValue) {
 	const auto h = permutationValue & 3;
 	if (h == 0)
-		return *new MapGenerator::Vector2(1.0, 1.0);
+		return constVectorPP;
 	else if (h == 1)
-		return *new MapGenerator::Vector2(-1.0, 1.0);
+		return constVectorMP;
 	else if (h == 2)
-		return *new MapGenerator::Vector2(-1.0, -1.0);
+		return constVectorMM;
 	else
-		return *new MapGenerator::Vector2(1.0, -1.0);
+		return constVectorPM;
 }
 
 float fade(const float& t) {
