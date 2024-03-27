@@ -1,8 +1,11 @@
 #include "MapHandler.h"
 #include "MapGenerator.h"
+#include <thread>
 
 //internal functions signature
+void generateMapSlice(MapGenerator& MG, std::vector<std::vector<float>>& map, const int& fromX, const int& toX, const int& fromY, const int& toY);
 float calculateCellSize(const int& sizeX, const int& sizeY);
+
 
 //private functions
 MapHandler::POI::POI(const int& x, const int& y) {
@@ -27,19 +30,43 @@ MapHandler::MapHandler(const int& sizeX, const int& sizeY) {
 void MapHandler::mapDraw() {
 	window->clear();
 
-	for (int x = 0; x < sizeX; x++) {
-		for (int y = 0; y < sizeY; y++) {
+	sf::VertexArray vertices_map;
+	vertices_map.setPrimitiveType(sf::Quads);
+	vertices_map.resize(sizeX * sizeY * 4);
 
-			tile->setPosition(sf::Vector2f(x * cellSize, y * cellSize));
-			if (map[x][y] == 10)
-				tile->setFillColor(sf::Color(255, 0, 0));
-			else if (map[x][y] > BASE_CELL_VALUE)
-				tile->setFillColor(sf::Color(0, 255 * (1.2f - map[x][y]), 0));
+	sf::Color tileColor;
+
+	for (size_t x = 0; x < sizeX; x++)
+	{
+		for (size_t y = 0; y < sizeY; y++)
+		{
+			sf::Vertex* quad = &vertices_map[(x + y * sizeY) * 4];
+
+			quad[0].position = sf::Vector2f(x * cellSize, y * cellSize);
+			quad[1].position = sf::Vector2f((x + 1) * cellSize, y * cellSize);
+			quad[2].position = sf::Vector2f((x + 1) * cellSize, (y + 1) * cellSize);
+			quad[3].position = sf::Vector2f(x * cellSize, (y + 1) * cellSize);
+
+			float mapValue = map[x][y];
+
+			if(map[x][y] == 10)
+				tileColor = sf::Color(255, 0, 0);
+			else if(map[x][y] > BASE_CELL_VALUE)
+				tileColor = sf::Color(100 , 255 * (1.2 - mapValue), 50);
+			//else if(map[x][y] > (BASE_CELL_VALUE + BASE_CELL_VALUE * .5f))
+			//	tileColor = sf::Color(255, 255, 255 * mapValue);
 			else 
-				tile->setFillColor(sf::Color(0, 0, 255 * map[x][y]));
-			window->draw(*tile);
+				tileColor = sf::Color(77 * mapValue, 158 * mapValue, 255 * mapValue);
+
+			quad[0].color = tileColor;
+			quad[1].color = tileColor;
+			quad[2].color = tileColor;
+			quad[3].color = tileColor;
+
 		}
 	}
+
+	window->draw(vertices_map);
 
 	window->display();
 }
@@ -48,32 +75,37 @@ void MapHandler::generateMap() {
 	MapGenerator MG;
 
 	//should be possible to add multi threading for faster generation
-	for (int x = 0; x < sizeX; x++)
-	{
-		for (int y = 0; y < sizeY; y++)
-		{
-			auto n = 0.0,
-				a = 1.0,
-				f = 0.005;
-			for (int o = 0; o < 15; o++) {
-				auto v = a * MG.noise2D(x * f, y * f);
-				n += v;
+	//generateMapSlice(MG, map, 0, sizeX, 0, sizeY);
+	std::vector<std::thread> threads;
 
-				a *= 0.5;
-				f *= 2.0;
-			}
-			n += 1.0;
-			n *= 0.5;
+	int startX = 0;
+	int finishX = sizeX / THREADS_FOR_GENERATION;
 
-			if (n > 1.f)
-				n = 1.f;
-			if (n < .0f)
-				n = .0f;
+	for (size_t i = 0; i < THREADS_FOR_GENERATION; i++) {
+		threads.push_back(std::thread(
+			generateMapSlice, 
+			std::ref(MG), 
+			std::ref(map), 
+			startX, finishX,
+			0, sizeY));
 
-			map[x][y] = n;
-		}
+		startX = finishX;
+		finishX += sizeX / THREADS_FOR_GENERATION;
 	}
+
+
+	for (auto& thread : threads)
+		thread.join();
+
+	//std::thread t1(generateMapSlice, std::ref(MG), std::ref(map), 0, sizeX / 2, 0, sizeY);
+	//std::thread t2(generateMapSlice, std::ref(MG), std::ref(map), sizeX / 2, sizeX, 0, sizeY);
+	//t1.join();
+	//t2.join();
 }
+
+
+
+
 
 void MapHandler::generatePOI(const int& amount) {
 	srand(time(NULL));
@@ -93,6 +125,10 @@ void MapHandler::generatePOI(const int& amount) {
 	}
 }
 
+float MapHandler::getCellSize() {
+	return cellSize;
+}
+
 bool MapHandler::windowIsOpen() {
 
 	sf::Event event;
@@ -109,11 +145,43 @@ bool MapHandler::windowIsOpen() {
 	return window->isOpen();
 }
 
+void MapHandler::windowDrawTile(sf::RectangleShape& tile) {
+	window->draw(tile);
+}
+
 std::vector<MapHandler::POI> MapHandler::getPOIs() {
 	return pointsOfInterests;
 }
 
 //internal functions implementation
+void generateMapSlice(MapGenerator& MG, std::vector<std::vector<float>>& map, const int& fromX, const int& toX, const int& fromY, const int& toY) {
+	for (int x = fromX; x < toX; x++)
+	{
+		for (int y = fromY; y < toY; y++)
+		{
+			auto n = 0.0,
+				a = 1.0,
+				f = 0.005;
+			for (int o = 0; o < 8; o++) {
+				auto v = a * MG.noise2D(x * f, y * f);
+				n += v;
+
+				a *= 0.5;
+				f *= 2.0;
+			}
+			n += 1.0;
+			n *= 0.5;
+
+			if (n > 1.f)
+				n = 1.f;
+			else if (n < .0f)
+				n = .0f;
+
+			map[x][y] = n;
+
+		}
+	}
+}
 
 float calculateCellSize(const int& sizeX, const int& sizeY) {
 	float cellSize = 1;

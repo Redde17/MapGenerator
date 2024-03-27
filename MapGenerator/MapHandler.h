@@ -3,7 +3,9 @@
 #include "GlobalInclude.h"
 
 #define APP_NAME "MapGenerator"
-#define BASE_CELL_VALUE 0.55f
+#define BASE_CELL_VALUE 0.45f
+
+#define THREADS_FOR_GENERATION std::thread::hardware_concurrency()
 
 class MapHandler
 {
@@ -33,7 +35,9 @@ public:
 	void generatePOI(const int& amount);
 	std::vector<POI> getPOIs();
 
+	float getCellSize();
+
 	//window access function
 	bool windowIsOpen();
+	void windowDrawTile(sf::RectangleShape& tile);
 };
-

@@ -10,8 +10,8 @@ using std::chrono::duration;
 using std::chrono::high_resolution_clock;
 
 
-#define MAP_X 500
-#define MAP_Y 500
+#define MAP_X 1000
+#define MAP_Y 1000
 
 int main() {
     //sf::RenderWindow window(sf::VideoMode(MAP_X * GRID_SIZE, MAP_Y * GRID_SIZE), "MapGenerator", sf::Style::Close);
