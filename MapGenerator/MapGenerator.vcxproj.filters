@@ -16,6 +16,12 @@
     <Filter Include="Source Files\Classes">
       <UniqueIdentifier>{568dd903-3c2b-4948-ba06-493f83edc71d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ImGUI headers">
+      <UniqueIdentifier>{58e9fe60-5854-43bb-afa1-c590b1feb0f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ImGUI classes">
+      <UniqueIdentifier>{66c9c7bb-9c5e-4564-8d0d-0564a16c719f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -27,6 +33,21 @@
     <ClCompile Include="MapGenerator.cpp">
       <Filter>Source Files\Classes</Filter>
     </ClCompile>
+    <ClCompile Include="imgui\imgui-SFML.cpp">
+      <Filter>Source Files\ImGUI classes</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui.cpp">
+      <Filter>Source Files\ImGUI classes</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_draw.cpp">
+      <Filter>Source Files\ImGUI classes</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_tables.cpp">
+      <Filter>Source Files\ImGUI classes</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_widgets.cpp">
+      <Filter>Source Files\ImGUI classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MapHandler.h">
@@ -37,6 +58,33 @@
     </ClInclude>
     <ClInclude Include="MapGenerator.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imconfig.h">
+      <Filter>Header Files\ImGUI headers</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imconfig-SFML.h">
+      <Filter>Header Files\ImGUI headers</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui.h">
+      <Filter>Header Files\ImGUI headers</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui_internal.h">
+      <Filter>Header Files\ImGUI headers</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui-SFML.h">
+      <Filter>Header Files\ImGUI headers</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imgui-SFML_export.h">
+      <Filter>Header Files\ImGUI headers</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_rectpack.h">
+      <Filter>Header Files\ImGUI headers</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_textedit.h">
+      <Filter>Header Files\ImGUI headers</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui\imstb_truetype.h">
+      <Filter>Header Files\ImGUI headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

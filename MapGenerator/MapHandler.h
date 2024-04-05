@@ -3,7 +3,7 @@
 #include "GlobalInclude.h"
 
 #define APP_NAME "MapGenerator"
-#define BASE_CELL_VALUE 0.45f
+//#define BASE_CELL_VALUE 0.45f
 
 #define THREADS_FOR_GENERATION std::thread::hardware_concurrency()
 
@@ -17,7 +17,6 @@ public:
 	};
 
 private:
-	sf::RenderWindow* window;
 	std::vector<std::vector<float>> map;
 	std::vector<POI> pointsOfInterests;
 
@@ -27,12 +26,18 @@ private:
 	float cellSize;
 
 public:
+	float baseCellValue;
+	sf::RenderWindow* window;
+	sf::VertexArray vertices_map;
+
 	//MapHandler();
 	MapHandler(const int &sizeX, const int& sizeY);
 
-	void mapDraw();
+	void generateVertexMap();
 	void generateMap();
-	void generatePOI(const int& amount);
+	void generatePOIset(const int& amount);
+	void deletePOIset();
+	int getPOIamount();
 	std::vector<POI> getPOIs();
 
 	float getCellSize();

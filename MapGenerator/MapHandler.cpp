@@ -16,26 +16,30 @@ MapHandler::POI::POI(const int& x, const int& y) {
 //public functions
 
 MapHandler::MapHandler(const int& sizeX, const int& sizeY) {
+	baseCellValue = 0.45f;
+
 	this->sizeX = sizeX;
 	this->sizeY = sizeY;
 	cellSize = calculateCellSize(sizeX, sizeY);
 
 	window = new sf::RenderWindow(sf::VideoMode(sizeX * cellSize, sizeY * cellSize), APP_NAME, sf::Style::Close);
 	map = *new std::vector<std::vector<float>>();
-	map.resize(sizeX, std::vector<float>(sizeY, BASE_CELL_VALUE));
+	map.resize(sizeX, std::vector<float>(sizeY, baseCellValue));
 
 	tile = new sf::RectangleShape(sf::Vector2f(cellSize, cellSize));
-}
 
-void MapHandler::mapDraw() {
-	window->clear();
-
-	sf::VertexArray vertices_map;
 	vertices_map.setPrimitiveType(sf::Quads);
 	vertices_map.resize(sizeX * sizeY * 4);
+}
+
+void MapHandler::generateVertexMap() {
+	//sf::VertexArray vertices_map;
+	//vertices_map.setPrimitiveType(sf::Quads);
+	//vertices_map.resize(sizeX * sizeY * 4);
 
 	sf::Color tileColor;
 
+	//map generation
 	for (size_t x = 0; x < sizeX; x++)
 	{
 		for (size_t y = 0; y < sizeY; y++)
@@ -49,9 +53,9 @@ void MapHandler::mapDraw() {
 
 			float mapValue = map[x][y];
 
-			if(map[x][y] == 10)
-				tileColor = sf::Color(255, 0, 0);
-			else if(map[x][y] > BASE_CELL_VALUE)
+			//if(map[x][y] == 10)
+			//	tileColor = sf::Color(255, 0, 0);
+			if(map[x][y] > baseCellValue)
 				tileColor = sf::Color(100 , 255 * (1.2 - mapValue), 50);
 			//else if(map[x][y] > (BASE_CELL_VALUE + BASE_CELL_VALUE * .5f))
 			//	tileColor = sf::Color(255, 255, 255 * mapValue);
@@ -62,13 +66,21 @@ void MapHandler::mapDraw() {
 			quad[1].color = tileColor;
 			quad[2].color = tileColor;
 			quad[3].color = tileColor;
-
 		}
 	}
 
-	window->draw(vertices_map);
+	//POI set generation
+	tileColor = sf::Color(255, 0, 0);
+	for (auto poi : pointsOfInterests) {
+		sf::Vertex* quad = &vertices_map[(poi.x + poi.y * sizeY) * 4];
+		
+		quad[0].color = tileColor;
+		quad[1].color = tileColor;
+		quad[2].color = tileColor;
+		quad[3].color = tileColor;
+	}
 
-	window->display();
+	//window->draw(vertices_map);
 }
 
 void MapHandler::generateMap() {
@@ -107,7 +119,7 @@ void MapHandler::generateMap() {
 
 
 
-void MapHandler::generatePOI(const int& amount) {
+void MapHandler::generatePOIset(const int& amount) {
 	srand(time(NULL));
 	for (int i = 0; i < amount; i++)
 	{
@@ -115,14 +127,22 @@ void MapHandler::generatePOI(const int& amount) {
 		int y = rand() % sizeY;
 
 		//force generation on land
-		if (map[x][y] < BASE_CELL_VALUE) {
+		if (map[x][y] < baseCellValue) {
 			i--;
 			continue;
 		}
 
 		pointsOfInterests.push_back(*new POI(x, y));
-		map[x][y] = 10;
+		//map[x][y] = 10;
 	}
+}
+
+void MapHandler::deletePOIset() {
+	pointsOfInterests.clear();
+}
+
+int MapHandler::getPOIamount() {
+	return pointsOfInterests.size();
 }
 
 float MapHandler::getCellSize() {
@@ -133,6 +153,7 @@ bool MapHandler::windowIsOpen() {
 
 	sf::Event event;
 	while (window->pollEvent(event)) {
+		ImGui::SFML::ProcessEvent(event);
 		switch (event.type) {
 		case sf::Event::Closed:
 			window->close();
@@ -184,7 +205,7 @@ void generateMapSlice(MapGenerator& MG, std::vector<std::vector<float>>& map, co
 }
 
 float calculateCellSize(const int& sizeX, const int& sizeY) {
-	float cellSize = 1;
+	float cellSize = 2;
 	
 	//do something for dynamic size based on map dimension
 	//or implement map navigation with static window size

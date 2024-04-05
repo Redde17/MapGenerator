@@ -10,37 +10,106 @@ using std::chrono::duration;
 using std::chrono::high_resolution_clock;
 
 
-#define MAP_X 1000
-#define MAP_Y 1000
+#define MAP_X 500
+#define MAP_Y 500
+
+MapHandler MH(MAP_X, MAP_Y);
+float tempBaseCellValue = 0.45f;
+int POIsetSize = 10;
+int POIamount = 0;
+bool vertexMapChanged = false;
+
+void initMap(MapHandler& MH);
+void imGuiMapToolsSet();
 
 int main() {
-    //sf::RenderWindow window(sf::VideoMode(MAP_X * GRID_SIZE, MAP_Y * GRID_SIZE), "MapGenerator", sf::Style::Close);
-    //window.setFramerateLimit(60);
-
     std::cout << "Program start" << std::endl;
 
-    MapHandler MH(MAP_X, MAP_Y);
+    initMap(MH);
+    int POIamount = MH.getPOIamount();
 
+    ImGui::SFML::Init(*MH.window);
+
+    sf::Clock deltaClock;
+    while (MH.window->isOpen())
+    {
+        sf::Event event;
+        while (MH.window->pollEvent(event)) {
+            ImGui::SFML::ProcessEvent(event);
+            switch (event.type) {
+            case sf::Event::Closed:
+                MH.window->close();
+                break;
+            default:
+                break;
+            }
+        }
+        ImGui::SFML::Update(*MH.window, deltaClock.restart());
+
+        imGuiMapToolsSet();
+
+
+
+        MH.window->clear();
+        MH.window->draw(MH.vertices_map);
+        ImGui::SFML::Render(*MH.window);
+        MH.window->display();
+    }
+
+    ImGui::SFML::Shutdown();
+    return 0;
+}
+
+void initMap(MapHandler& MH) {
     auto t1 = high_resolution_clock::now();
     MH.generateMap();
     auto t2 = high_resolution_clock::now();
     duration<double, std::milli> ms_double = t2 - t1;
     std::cout << "Map generation time: " << ms_double.count() << "ms\n";
-    
+
     t1 = high_resolution_clock::now();
-    MH.generatePOI(100);
+    MH.generatePOIset(100);
     t2 = high_resolution_clock::now();
     ms_double = t2 - t1;
     std::cout << "POI generation time: " << ms_double.count() << "ms\n";
+    POIamount = MH.getPOIamount();
 
     t1 = high_resolution_clock::now();
-    MH.mapDraw();
+    MH.generateVertexMap();
     t2 = high_resolution_clock::now();
     ms_double = t2 - t1;
-    std::cout << "draw time: " << ms_double.count() << "ms\n";
+    std::cout << "vertices map generation time: " << ms_double.count() << "ms\n";
+}
 
+void imGuiMapToolsSet() {
+    ImGui::Begin("Map tools");
+    //ImGui::Text("Land Value");
+    ImGui::SliderFloat("Land/Sea Ratio", &tempBaseCellValue, 0.0f, 1.0f);
+    ImGui::InputInt("POIs set size", &POIsetSize, 1);
+    if (ImGui::Button("Generate new POI set")) {
+        MH.generatePOIset(POIsetSize);
+        vertexMapChanged = true;
+    }
 
-    while (MH.windowIsOpen()) {}
+    if (ImGui::Button("Delete all POIs")) {
+        MH.deletePOIset();
+        vertexMapChanged = true;
+    }
+    ImGui::End();
 
-    return 0;
+    if (tempBaseCellValue != MH.baseCellValue) {
+        MH.baseCellValue = tempBaseCellValue;
+        vertexMapChanged = true;
+    }
+
+    if (vertexMapChanged) {
+        vertexMapChanged = false;
+        MH.generateVertexMap();
+        POIamount = MH.getPOIamount();
+    }
+
+    ImGui::BeginChild("Stats");
+    ImGui::Text("Size:\n %d x %d\n", MAP_X, MAP_Y);
+    ImGui::Text("Points Of Interest:\n %d\n", POIamount);
+    ImGui::EndChild();
 }
