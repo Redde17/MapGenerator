@@ -23,14 +23,10 @@ void imGuiMapToolsSet();
 //need code refactor
 int main() {
     std::cout << "Program start" << std::endl;
-    sf::RenderWindow mainWindow(sf::VideoMode(1000, 800), "My window");
+    sf::RenderWindow mainWindow(sf::VideoMode(1000, 800), "MapGenerator");
 
     initMap(MH);
     int POIamount = MH.getPOIamount();
-
-    sf::Vector2u mapSize(MH.mapTexture.getSize());
-    sf::Texture frame;
-    
 
     ImGui::SFML::Init(mainWindow);
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -42,6 +38,7 @@ int main() {
         sf::Event event;
         while (mainWindow.pollEvent(event)) {
             ImGui::SFML::ProcessEvent(event);
+
             switch (event.type) {
             case sf::Event::Closed:
                 mainWindow.close();
@@ -49,6 +46,7 @@ int main() {
             default:
                 break;
             }
+
         }
 
         ImGui::SFML::Update(mainWindow, deltaClock.restart());
@@ -68,20 +66,21 @@ int main() {
         //create ImGUI windows
         imGuiMapToolsSet();
 
-        //MH.window->clear(sf::Color(200, 0, 0));
         mainWindow.clear();
         MH.mapTexture.draw(MH.vertices_map);
         
-        ImGui::Begin("RenderWindow");
+        ImGui::Begin("RenderWindow", NULL, ImGuiWindowFlags_HorizontalScrollbar);
+        ImVec2 imageSize(MH.mapTexture.getSize().x, MH.mapTexture.getSize().y);
+        ImVec2 center((ImGui::GetWindowSize().x - MH.mapTexture.getSize().x) * 0.5f, (ImGui::GetWindowSize().y - MH.mapTexture.getSize().y) * 0.5f );
+        ImGui::SetCursorPos(center);
         ImGui::Image(MH.mapTexture);
         ImGui::End();
 
         ImGui::SFML::Render(mainWindow);
 
-        //MH.window->display();
         mainWindow.display();
     }
-    //ImGui::PopStyleColor();
+
     ImGui::SFML::Shutdown();
     return 0;
 }
