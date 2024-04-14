@@ -13,7 +13,6 @@
 //-----------------------------------------------------------------------------
 
 #pragma once
-
 #include "imconfig-SFML.h"
 
 //---- Define assertion handler. Defaults to calling assert().

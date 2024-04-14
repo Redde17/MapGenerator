@@ -8,8 +8,6 @@
 using namespace std::chrono_literals;
 using std::chrono::duration;
 using std::chrono::high_resolution_clock;
-
-
 #define MAP_X 500
 #define MAP_Y 500
 
@@ -22,40 +20,68 @@ bool vertexMapChanged = false;
 void initMap(MapHandler& MH);
 void imGuiMapToolsSet();
 
+//need code refactor
 int main() {
     std::cout << "Program start" << std::endl;
+    sf::RenderWindow mainWindow(sf::VideoMode(1000, 800), "My window");
 
     initMap(MH);
     int POIamount = MH.getPOIamount();
 
-    ImGui::SFML::Init(*MH.window);
+    sf::Vector2u mapSize(MH.mapTexture.getSize());
+    sf::Texture frame;
+    
+
+    ImGui::SFML::Init(mainWindow);
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     sf::Clock deltaClock;
-    while (MH.window->isOpen())
+    while (mainWindow.isOpen())
     {
+        //event handling
         sf::Event event;
-        while (MH.window->pollEvent(event)) {
+        while (mainWindow.pollEvent(event)) {
             ImGui::SFML::ProcessEvent(event);
             switch (event.type) {
             case sf::Event::Closed:
-                MH.window->close();
+                mainWindow.close();
                 break;
             default:
                 break;
             }
         }
-        ImGui::SFML::Update(*MH.window, deltaClock.restart());
 
+        ImGui::SFML::Update(mainWindow, deltaClock.restart());
+
+        //ImGUI docking implementation
+        if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+        }
+
+        //Main Window Docking implementation
+        if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+            ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+        }
+
+        //create ImGUI windows
         imGuiMapToolsSet();
 
+        //MH.window->clear(sf::Color(200, 0, 0));
+        mainWindow.clear();
+        MH.mapTexture.draw(MH.vertices_map);
+        
+        ImGui::Begin("RenderWindow");
+        ImGui::Image(MH.mapTexture);
+        ImGui::End();
 
+        ImGui::SFML::Render(mainWindow);
 
-        MH.window->clear();
-        MH.window->draw(MH.vertices_map);
-        ImGui::SFML::Render(*MH.window);
-        MH.window->display();
+        //MH.window->display();
+        mainWindow.display();
     }
-
+    //ImGui::PopStyleColor();
     ImGui::SFML::Shutdown();
     return 0;
 }
@@ -108,8 +134,8 @@ void imGuiMapToolsSet() {
         POIamount = MH.getPOIamount();
     }
 
-    ImGui::BeginChild("Stats");
+    ImGui::Begin("Stats");
     ImGui::Text("Size:\n %d x %d\n", MAP_X, MAP_Y);
     ImGui::Text("Points Of Interest:\n %d\n", POIamount);
-    ImGui::EndChild();
+    ImGui::End();
 }

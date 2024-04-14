@@ -27,7 +27,7 @@ private:
 
 public:
 	float baseCellValue;
-	sf::RenderWindow* window;
+	sf::RenderTexture mapTexture;
 	sf::VertexArray vertices_map;
 
 	//MapHandler();
@@ -41,8 +41,4 @@ public:
 	std::vector<POI> getPOIs();
 
 	float getCellSize();
-
-	//window access function
-	bool windowIsOpen();
-	void windowDrawTile(sf::RectangleShape& tile);
 };

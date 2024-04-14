@@ -22,7 +22,8 @@ MapHandler::MapHandler(const int& sizeX, const int& sizeY) {
 	this->sizeY = sizeY;
 	cellSize = calculateCellSize(sizeX, sizeY);
 
-	window = new sf::RenderWindow(sf::VideoMode(sizeX * cellSize, sizeY * cellSize), APP_NAME, sf::Style::Close);
+	mapTexture.create(sizeX * cellSize, sizeY * cellSize);
+
 	map = *new std::vector<std::vector<float>>();
 	map.resize(sizeX, std::vector<float>(sizeY, baseCellValue));
 
@@ -33,10 +34,6 @@ MapHandler::MapHandler(const int& sizeX, const int& sizeY) {
 }
 
 void MapHandler::generateVertexMap() {
-	//sf::VertexArray vertices_map;
-	//vertices_map.setPrimitiveType(sf::Quads);
-	//vertices_map.resize(sizeX * sizeY * 4);
-
 	sf::Color tileColor;
 
 	//map generation
@@ -79,15 +76,11 @@ void MapHandler::generateVertexMap() {
 		quad[2].color = tileColor;
 		quad[3].color = tileColor;
 	}
-
-	//window->draw(vertices_map);
 }
 
 void MapHandler::generateMap() {
 	MapGenerator MG;
 
-	//should be possible to add multi threading for faster generation
-	//generateMapSlice(MG, map, 0, sizeX, 0, sizeY);
 	std::vector<std::thread> threads;
 
 	int startX = 0;
@@ -108,16 +101,7 @@ void MapHandler::generateMap() {
 
 	for (auto& thread : threads)
 		thread.join();
-
-	//std::thread t1(generateMapSlice, std::ref(MG), std::ref(map), 0, sizeX / 2, 0, sizeY);
-	//std::thread t2(generateMapSlice, std::ref(MG), std::ref(map), sizeX / 2, sizeX, 0, sizeY);
-	//t1.join();
-	//t2.join();
 }
-
-
-
-
 
 void MapHandler::generatePOIset(const int& amount) {
 	srand(time(NULL));
@@ -147,27 +131,6 @@ int MapHandler::getPOIamount() {
 
 float MapHandler::getCellSize() {
 	return cellSize;
-}
-
-bool MapHandler::windowIsOpen() {
-
-	sf::Event event;
-	while (window->pollEvent(event)) {
-		ImGui::SFML::ProcessEvent(event);
-		switch (event.type) {
-		case sf::Event::Closed:
-			window->close();
-			break;
-		default:
-			break;
-		}
-	}
-
-	return window->isOpen();
-}
-
-void MapHandler::windowDrawTile(sf::RectangleShape& tile) {
-	window->draw(tile);
 }
 
 std::vector<MapHandler::POI> MapHandler::getPOIs() {
