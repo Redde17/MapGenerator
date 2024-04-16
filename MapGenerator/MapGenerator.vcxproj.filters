@@ -48,6 +48,21 @@
     <ClCompile Include="imgui\imgui_widgets.cpp">
       <Filter>Source Files\ImGUI classes</Filter>
     </ClCompile>
+    <ClCompile Include="LogisticHandler.cpp">
+      <Filter>Source Files\Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="ClusterGenerator.cpp">
+      <Filter>Source Files\Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="POI.cpp">
+      <Filter>Source Files\Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="ClusterTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cluster.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MapHandler.h">
@@ -85,6 +100,21 @@
     </ClInclude>
     <ClInclude Include="imgui\imstb_truetype.h">
       <Filter>Header Files\ImGUI headers</Filter>
+    </ClInclude>
+    <ClInclude Include="LogisticHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ClusterGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="POI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ClusterTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cluster.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

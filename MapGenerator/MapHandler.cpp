@@ -1,17 +1,11 @@
 #include "MapHandler.h"
 #include "MapGenerator.h"
+#include "POI.h"
 #include <thread>
 
 //internal functions signature
 void generateMapSlice(MapGenerator& MG, std::vector<std::vector<float>>& map, const int& fromX, const int& toX, const int& fromY, const int& toY);
 float calculateCellSize(const int& sizeX, const int& sizeY);
-
-
-//private functions
-MapHandler::POI::POI(const int& x, const int& y) {
-	this->x = x;
-	this->y = y;
-}
 
 //public functions
 
@@ -133,7 +127,7 @@ float MapHandler::getCellSize() {
 	return cellSize;
 }
 
-std::vector<MapHandler::POI> MapHandler::getPOIs() {
+std::vector<POI> MapHandler::getPOIs() {
 	return pointsOfInterests;
 }
 

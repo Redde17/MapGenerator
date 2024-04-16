@@ -1,5 +1,6 @@
 #include "GlobalInclude.h"
 #include "MapHandler.h"
+#include "LogisticHandler.h"
 
 #include <chrono>
 #include <thread>
@@ -12,6 +13,7 @@ using std::chrono::high_resolution_clock;
 #define MAP_Y 500
 
 MapHandler MH(MAP_X, MAP_Y);
+LogisticHandler LH;
 float tempBaseCellValue = 0.45f;
 int POIsetSize = 10;
 int POIamount = 0;
@@ -106,6 +108,9 @@ void initMap(MapHandler& MH) {
     std::cout << "vertices map generation time: " << ms_double.count() << "ms\n";
 }
 
+const char* items[] = { "Hierarchical", "K-means" };
+static const char* currentItem = items[0];
+
 void imGuiMapToolsSet() {
     ImGui::Begin("Map tools");
     //ImGui::Text("Land Value");
@@ -136,5 +141,30 @@ void imGuiMapToolsSet() {
     ImGui::Begin("Stats");
     ImGui::Text("Size:\n %d x %d\n", MAP_X, MAP_Y);
     ImGui::Text("Points Of Interest:\n %d\n", POIamount);
+    ImGui::End();
+
+    ImGui::Begin("Clustering tools");
+
+    if (ImGui::BeginCombo("##ComboBox", currentItem)) {
+        for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+        {
+            bool isSelected = (currentItem == items[n]); // You can store your selection however you want, outside or inside your objects
+            if (ImGui::Selectable(items[n], isSelected)) {
+                currentItem = items[n];
+                if (isSelected)
+                    ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+            }
+        }
+        ImGui::EndCombo();
+    }
+
+    if (ImGui::Button("generate cluster")) {
+        if (currentItem == items[0])
+            //generate Hierarchical cluster
+            LH.generateCluster(LogisticHandler::ClusterType::HIERARCHICAL, MH.getPOIs());
+        else if(currentItem == items[1])
+            //generte K-means cluster
+            LH.generateCluster(LogisticHandler::ClusterType::K_MEANS, MH.getPOIs());
+    }
     ImGui::End();
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GlobalInclude.h"
+#include "POI.h"
 
 #define APP_NAME "MapGenerator"
 //#define BASE_CELL_VALUE 0.45f
@@ -10,11 +11,6 @@
 class MapHandler
 {
 public:
-	struct POI {
-		int x, y;
-
-		POI(const int& x, const int& y);
-	};
 
 private:
 	std::vector<std::vector<float>> map;
