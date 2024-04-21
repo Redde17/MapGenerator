@@ -4,6 +4,7 @@
 
 class ClusterTree
 {
+public:
 	struct Node {
 		Cluster* cluster;
 		std::vector<Node*> parents;
@@ -14,16 +15,15 @@ class ClusterTree
 		void addChild(Node* node);
 	};
 
-
+private:
 	int size;
 	Node* root;
-	//leafs list for faster access as the operation on the tree will mostly use it's leafs
-	std::vector<Node*> leafs;
+
+	void getLeafsRecursiveFunc(std::vector<Node*>* leafs, Node* currentNode);
 
 public:
 	ClusterTree();
 
-	//remember to add leaf tracking support to adding and merging functions
 	Node* getRoot();
 	std::vector<Node*> getLeafs();
 	void mergeLeafs(Node* leaf1, Node* leaf2);

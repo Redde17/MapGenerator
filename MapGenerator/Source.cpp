@@ -1,6 +1,7 @@
 #include "GlobalInclude.h"
 #include "MapHandler.h"
 #include "LogisticHandler.h"
+#include "ClusterTree.h"
 
 #include <chrono>
 #include <thread>
@@ -166,5 +167,6 @@ void imGuiMapToolsSet() {
             //generte K-means cluster
             LH.generateCluster(LogisticHandler::ClusterType::K_MEANS, MH.getPOIs());
     }
+
     ImGui::End();
 }
