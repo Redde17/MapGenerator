@@ -78,6 +78,10 @@ int main() {
         ImGui::Image(MH.mapTexture);
         ImGui::End();
 
+        ImGui::Begin("Interpolation Debug Window");
+
+        ImGui::End();
+
         ImGui::SFML::Render(mainWindow);
 
         mainWindow.display();
@@ -113,7 +117,6 @@ static const char* currentItem = items[0];
 
 void imGuiMapToolsSet() {
     ImGui::Begin("Map tools");
-    //ImGui::Text("Land Value");
     ImGui::SliderFloat("Land/Sea Ratio", &tempBaseCellValue, 0.0f, 1.0f);
     ImGui::InputInt("POIs set size", &POIsetSize, 1);
     if (ImGui::Button("Generate new POI set")) {
@@ -125,6 +128,13 @@ void imGuiMapToolsSet() {
         MH.deletePOIset();
         vertexMapChanged = true;
     }
+
+    if (ImGui::Button("Generate new Map")) {
+        MH.generateMap();
+        MH.deletePOIset();
+        vertexMapChanged = true;
+    }
+
     ImGui::End();
 
     if (tempBaseCellValue != MH.baseCellValue) {

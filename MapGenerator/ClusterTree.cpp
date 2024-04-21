@@ -30,7 +30,10 @@ std::vector<ClusterTree::Node*> ClusterTree::getLeafs() {
 
 //merges two leafs into a new one, the new leaf parents are it's composing leafs
 void ClusterTree::mergeLeafs(Node* leaf1, Node* leaf2) {
-	Node newLeaf(new Cluster(leaf1->cluster, leaf2->cluster), std::vector<Node*>(leaf1, leaf2));
+
+	Cluster *tempCluster = new Cluster(leaf1->cluster, leaf2->cluster);
+	std::vector<Node*> tempVector = {leaf1, leaf2};
+	Node newLeaf(tempCluster, tempVector);
 
 	leaf1->addChild(&newLeaf);
 	leaf2->addChild(&newLeaf);
