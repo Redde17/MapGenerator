@@ -27,8 +27,28 @@ MapHandler::MapHandler(const int& sizeX, const int& sizeY) {
 	vertices_map.resize(sizeX * sizeY * 4);
 }
 
+sf::Color interpolateColor(sf::Color color1, sf::Color color2, float interpolationValue) {
+	return sf::Color(
+		color1.r + (color2.r - color1.r) * interpolationValue,
+		color1.g + (color2.g - color1.b) * interpolationValue,
+		color1.b + (color2.g - color1.b) * interpolationValue
+	);
+}
+
+//should return the value from the min max range in normalized form 0-1
+float rangeValue(float min, float max, float value) {
+	return (value - min) * (1 / (max - min));
+}
+
 void MapHandler::generateVertexMap() {
 	sf::Color tileColor;
+
+	sf::Color plainsColor(95, 255, 59);
+	sf::Color shoreColor(242, 223, 78);
+	sf::Color mountainColor(67, 117, 38);
+	sf::Color mountainPeakColor(255, 255, 255);
+	sf::Color seaColor(72, 203, 250);
+	sf::Color deepSeaColor(24, 53, 158);
 
 	//map generation
 	for (size_t x = 0; x < sizeX; x++)
@@ -46,12 +66,63 @@ void MapHandler::generateVertexMap() {
 
 			//if(map[x][y] == 10)
 			//	tileColor = sf::Color(255, 0, 0);
-			if(map[x][y] > baseCellValue)
-				tileColor = sf::Color(100 , 255 * (1.2 - mapValue), 50);
-			//else if(map[x][y] > (BASE_CELL_VALUE + BASE_CELL_VALUE * .5f))
-			//	tileColor = sf::Color(255, 255, 255 * mapValue);
-			else 
+			
+			// range goes from 0 to 1
+			// base cell value defines where the sea ends and the land start
+			//in the range x < baseCellValue (sea)
+			//shallow sea should be 25% of x 
+			//and deep sea should be 75% 
+			//in the range x > baseCellValue (land)
+			//in the following order from smaller x to bigger x
+			//5% should be shore	
+			//45% should be plains 
+			//50% should be mountains
+			//	5% of the mountain range should be mountain tops
+
+			//example of calculation
+			//shores.starting point = baseCellValue
+			//shores.ending point = baseCellValue + ((1.0/100) * 5) 
+			//transform range from starting point - ending point to 0-1
+			//ex 
+			// 0.5 = min = 0
+			// 0.7 = max = 1
+			// 
+			// 
+
+
+			//plains to mountains color
+			if (map[x][y] > (baseCellValue + baseCellValue * 0.05f))
+				tileColor = interpolateColor(plainsColor, mountainColor, rangeValue(baseCellValue + baseCellValue * 0.05f, 0.9f, map[x][y]));
+			//mountains peak color
+			if (map[x][y] > 0.7f && map[x][y] <= 0.9f)
+				tileColor = sf::Color(77 * map[x][y], 110 * map[x][y], 58 * map[x][y]);
+			if (map[x][y] > 0.9f)
+				tileColor = sf::Color(255 * map[x][y], 255 * map[x][y], 255 * map[x][y]);
+			//shores color
+			if (map[x][y] < (baseCellValue + baseCellValue * 0.05f) && map[x][y] > baseCellValue)
+				tileColor = sf::Color(242, 223, 78);
+			//sea color
+			if (map[x][y] < baseCellValue)
 				tileColor = sf::Color(77 * mapValue, 158 * mapValue, 255 * mapValue);
+
+			// old
+			////plains color
+			//if (map[x][y] > (baseCellValue + baseCellValue * 0.05f))
+			//	tileColor = sf::Color(100, 255 * (1.2 - mapValue), 50);
+			////mountains peak color
+			//if(map[x][y] > 0.7f && map[x][y] <= 0.9f)
+			//	tileColor = sf::Color(77 * map[x][y], 110 * map[x][y], 58 * map[x][y]);
+			//if (map[x][y] > 0.9f)
+			//	tileColor = sf::Color(255 * map[x][y], 255 * map[x][y], 255 * map[x][y]);
+			////shores color
+			//if (map[x][y] < (baseCellValue + baseCellValue * 0.05f) && map[x][y] > baseCellValue)
+			//	tileColor = sf::Color(242, 223, 78);
+			////sea color
+			//if(map[x][y] < baseCellValue)
+			//	tileColor = sf::Color(77 * mapValue, 158 * mapValue, 255 * mapValue);
+
+
+
 
 			quad[0].color = tileColor;
 			quad[1].color = tileColor;

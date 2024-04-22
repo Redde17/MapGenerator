@@ -1,81 +1,65 @@
 #include "ClusterTree.h"
+#include <algorithm>
 
-ClusterTree::ClusterTree() {
-	size = 0;
-	root = new Node(NULL, NULL);
+ClusterTree::Node::Node() {
 }
 
-ClusterTree::Node::Node(Cluster* cluster, Node* parent) {
-	this->cluster = cluster;
-	parents.push_back(parent);
+ClusterTree::Node::Node(POI& poi) {
+	cluster = Cluster(&poi);
 }
 
-ClusterTree::Node::Node(Cluster* cluster, std::vector<Node*> parents) {
+ClusterTree::Node::Node(Cluster& cluster) {
 	this->cluster = cluster;
-	this->parents = parents;
+}
+
+ClusterTree::Node::Node(Cluster& cluster1, Cluster& cluster2) {
+	this->cluster = Cluster(cluster1, cluster2);
 }
 
 void ClusterTree::Node::addChild(Node* node) {
 	childs.push_back(node);
 }
 
-
-ClusterTree::Node* ClusterTree::getRoot() {
-	return root;
+ClusterTree::ClusterTree() {
+	treeSize = 0;
 }
 
-void ClusterTree::getLeafsRecursiveFunc(std::vector<Node*>* leafs, Node* currentNode) {
+void getLeafsRecursive(std::vector<ClusterTree::Node*>& leafs, ClusterTree::Node* currentNode) {
 	if (currentNode->childs.size() == 0) {
-		leafs->push_back(currentNode);
+		//checks if the leaf has already been added to the vector
+		//this is because a leaf can have more then one parent, usually 2.
+		if (std::find(leafs.begin(), leafs.end(), currentNode) == leafs.end())
+			leafs.push_back(currentNode);
+
 		return;
 	}
 
-	for (auto child : currentNode->childs)
-		getLeafsRecursiveFunc(leafs, child);
+	for (auto nextNode : currentNode->childs)
+		getLeafsRecursive(leafs, nextNode);
+}
+
+int ClusterTree::getSize() {
+	return treeSize;
 }
 
 std::vector<ClusterTree::Node*> ClusterTree::getLeafs() {
 	std::vector<Node*> leafs;
 
-	getLeafsRecursiveFunc(&leafs, root);
-	
+	getLeafsRecursive(leafs, &root);
+
 	return leafs;
 }
 
+void ClusterTree::addNode(Node* parent, Node* child) {
+	parent->childs.push_back(child);
 
-
-//merges two leafs into a new one, the new leaf parents are it's composing leafs
-void ClusterTree::mergeLeafs(Node* leaf1, Node* leaf2) {
-	std::vector<Node*> parents;
-	parents.push_back(leaf1);
-	parents.push_back(leaf2);
-	Cluster newLeafCluster(leaf1->cluster, leaf2->cluster);
-	Node newLeaf(&newLeafCluster, parents);
-
-
-	leaf1->addChild(&newLeaf);
-	leaf2->addChild(&newLeaf);
-
-	size++;
+	treeSize++;
 }
 
-void ClusterTree::addNode(Node* parentNode, Cluster* nodeCluster) {
-	Node node(nodeCluster, parentNode);
+void ClusterTree::mergeNodes(Node* node1, Node* node2) {
+	Node* newNode = new Node(node1->cluster, node2->cluster);
+	node1->addChild(newNode);
+	node2->addChild(newNode);
 
-	parentNode->addChild(&node);
-
-	size++;
-}
-
-void ClusterTree::addNode(std::vector<Node*> parentNodes, Cluster* nodeCluster) {
-	Node node(nodeCluster, parentNodes);
-	
-	for (Node* parentNode : parentNodes)
-		parentNode->addChild(&node);
-
-	size++;
-}
-
-int ClusterTree::getTreeSize() {
-	return size;
+	treeSize++;
 }

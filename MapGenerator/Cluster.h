@@ -9,7 +9,8 @@ public:
 	std::vector<POI*> points;
 
 	//cluster position x,y is based on it's points
+	Cluster();
 	Cluster(POI* poi);
-	Cluster(Cluster* cluster1, Cluster* cluster2);
+	Cluster(Cluster& cluster1, Cluster& cluster2);
 };
 

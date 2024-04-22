@@ -6,29 +6,29 @@ class ClusterTree
 {
 public:
 	struct Node {
-		Cluster* cluster;
-		std::vector<Node*> parents;
+		Cluster cluster;
 		std::vector<Node*> childs;
 
-		Node(Cluster* cluster, Node* parent);
-		Node(Cluster* cluster, std::vector<Node*> parents);
+		Node();
+
+		Node(POI& poi);
+
+		Node(Cluster& cluster);
+		Node(Cluster& cluster1, Cluster& cluster2);
 		void addChild(Node* node);
 	};
 
 private:
-	int size;
-	Node* root;
-
-	void getLeafsRecursiveFunc(std::vector<Node*>* leafs, Node* currentNode);
+	int treeSize;
 
 public:
-	ClusterTree();
+	Node root;
 
-	Node* getRoot();
+	ClusterTree();
+	int getSize();
 	std::vector<Node*> getLeafs();
-	void mergeLeafs(Node* leaf1, Node* leaf2);
-	void addNode(Node* parentNode, Cluster* nodeCluster);
-	void addNode(std::vector<Node*> parentNode, Cluster* nodeCluster);
-	int getTreeSize();
+
+	void addNode(Node* parent, Node* child);
+	void mergeNodes(Node* node1, Node* node2);
 };
 

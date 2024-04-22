@@ -26,6 +26,8 @@ public:
 	sf::RenderTexture mapTexture;
 	sf::VertexArray vertices_map;
 
+	sf::RenderTexture colorInterpolationTexture;
+
 	//MapHandler();
 	MapHandler(const int &sizeX, const int& sizeY);
 
