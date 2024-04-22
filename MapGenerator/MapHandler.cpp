@@ -6,6 +6,8 @@
 //internal functions signature
 void generateMapSlice(MapGenerator& MG, std::vector<std::vector<float>>& map, const int& fromX, const int& toX, const int& fromY, const int& toY);
 float calculateCellSize(const int& sizeX, const int& sizeY);
+float linearMapValue(float min, float max, float value);
+sf::Color interpolateColor(sf::Color color1, sf::Color color2, float interpolationValue);
 
 //public functions
 
@@ -27,23 +29,10 @@ MapHandler::MapHandler(const int& sizeX, const int& sizeY) {
 	vertices_map.resize(sizeX * sizeY * 4);
 }
 
-sf::Color interpolateColor(sf::Color color1, sf::Color color2, float interpolationValue) {
-	return sf::Color(
-		color1.r + (color2.r - color1.r) * interpolationValue,
-		color1.g + (color2.g - color1.b) * interpolationValue,
-		color1.b + (color2.g - color1.b) * interpolationValue
-	);
-}
-
-//should return the value from the min max range in normalized form 0-1
-float rangeValue(float min, float max, float value) {
-	return (value - min) * (1 / (max - min));
-}
-
 void MapHandler::generateVertexMap() {
 	sf::Color tileColor;
 
-	sf::Color plainsColor(95, 255, 59);
+	sf::Color plainsColor(63, 156, 56);
 	sf::Color shoreColor(242, 223, 78);
 	sf::Color mountainColor(67, 117, 38);
 	sf::Color mountainPeakColor(255, 255, 255);
@@ -66,63 +55,29 @@ void MapHandler::generateVertexMap() {
 
 			//if(map[x][y] == 10)
 			//	tileColor = sf::Color(255, 0, 0);
-			
-			// range goes from 0 to 1
-			// base cell value defines where the sea ends and the land start
-			//in the range x < baseCellValue (sea)
-			//shallow sea should be 25% of x 
-			//and deep sea should be 75% 
-			//in the range x > baseCellValue (land)
-			//in the following order from smaller x to bigger x
-			//5% should be shore	
-			//45% should be plains 
-			//50% should be mountains
-			//	5% of the mountain range should be mountain tops
 
-			//example of calculation
-			//shores.starting point = baseCellValue
-			//shores.ending point = baseCellValue + ((1.0/100) * 5) 
-			//transform range from starting point - ending point to 0-1
-			//ex 
-			// 0.5 = min = 0
-			// 0.7 = max = 1
-			// 
-			// 
-
-
-			//plains to mountains color
-			if (map[x][y] > (baseCellValue + baseCellValue * 0.05f))
-				tileColor = interpolateColor(plainsColor, mountainColor, rangeValue(baseCellValue + baseCellValue * 0.05f, 0.9f, map[x][y]));
-			//mountains peak color
-			if (map[x][y] > 0.7f && map[x][y] <= 0.9f)
-				tileColor = sf::Color(77 * map[x][y], 110 * map[x][y], 58 * map[x][y]);
-			if (map[x][y] > 0.9f)
-				tileColor = sf::Color(255 * map[x][y], 255 * map[x][y], 255 * map[x][y]);
-			//shores color
-			if (map[x][y] < (baseCellValue + baseCellValue * 0.05f) && map[x][y] > baseCellValue)
-				tileColor = sf::Color(242, 223, 78);
-			//sea color
-			if (map[x][y] < baseCellValue)
-				tileColor = sf::Color(77 * mapValue, 158 * mapValue, 255 * mapValue);
-
-			// old
-			////plains color
-			//if (map[x][y] > (baseCellValue + baseCellValue * 0.05f))
-			//	tileColor = sf::Color(100, 255 * (1.2 - mapValue), 50);
-			////mountains peak color
-			//if(map[x][y] > 0.7f && map[x][y] <= 0.9f)
-			//	tileColor = sf::Color(77 * map[x][y], 110 * map[x][y], 58 * map[x][y]);
-			//if (map[x][y] > 0.9f)
-			//	tileColor = sf::Color(255 * map[x][y], 255 * map[x][y], 255 * map[x][y]);
-			////shores color
-			//if (map[x][y] < (baseCellValue + baseCellValue * 0.05f) && map[x][y] > baseCellValue)
-			//	tileColor = sf::Color(242, 223, 78);
-			////sea color
-			//if(map[x][y] < baseCellValue)
-			//	tileColor = sf::Color(77 * mapValue, 158 * mapValue, 255 * mapValue);
-
-
-
+			float val = map[x][y];
+			//land
+			float landSize = 1 - baseCellValue;
+			if (val >= baseCellValue + (landSize * .85f)) //10% of landSize
+				tileColor = mountainPeakColor;
+			else if(val >= baseCellValue + (landSize * .8f)) //10% of landSize
+				tileColor = interpolateColor(mountainColor, mountainPeakColor, linearMapValue(baseCellValue + (landSize * .8f), baseCellValue + (landSize * .9f), val));
+			else if (val >= baseCellValue + (landSize * .5f)) //30% of landSize
+				tileColor = mountainColor;
+			else if (val >= baseCellValue + (landSize * .45f)) //5% of landSize
+				tileColor = interpolateColor(plainsColor, mountainColor, linearMapValue(baseCellValue + (landSize * .45f), baseCellValue + (landSize * .5f), val));
+			else if (val >= baseCellValue + (landSize * .05f)) //40% of landSize
+				tileColor = plainsColor;
+			else if (val >= baseCellValue)//5% of landSize
+				tileColor = shoreColor;
+			//sea, note that sea size is base cell value 
+			else if (val >= baseCellValue * .9f) //10% of sea size
+				tileColor = seaColor;
+			else if (val >= baseCellValue * .1f) //80% of sea size
+				tileColor = interpolateColor(deepSeaColor, seaColor, linearMapValue(baseCellValue * .1f, baseCellValue * .9f, val));
+			else if (val >= 0) //10% of sea size
+				tileColor = deepSeaColor;
 
 			quad[0].color = tileColor;
 			quad[1].color = tileColor;
@@ -194,13 +149,14 @@ int MapHandler::getPOIamount() {
 	return pointsOfInterests.size();
 }
 
+std::vector<POI> MapHandler::getPOIs() {
+	return pointsOfInterests;
+}
+
 float MapHandler::getCellSize() {
 	return cellSize;
 }
 
-std::vector<POI> MapHandler::getPOIs() {
-	return pointsOfInterests;
-}
 
 //internal functions implementation
 void generateMapSlice(MapGenerator& MG, std::vector<std::vector<float>>& map, const int& fromX, const int& toX, const int& fromY, const int& toY) {
@@ -239,4 +195,26 @@ float calculateCellSize(const int& sizeX, const int& sizeY) {
 	//or implement map navigation with static window size
 
 	return cellSize;
+}
+
+//should return the value from the min max range in normalized form 0-1
+float linearMapValue(float min, float max, float value) {
+	float mapRangeMin = 0;
+	float mapRangeMax = 1;
+
+	return mapRangeMin + ((mapRangeMax - mapRangeMin) / (max - min)) * (value - min);
+}
+
+sf::Color interpolateColor(sf::Color color1, sf::Color color2, float interpolationValue) {
+	//return sf::Color(
+	//	color1.r + (color2.r - color1.r) * interpolationValue,
+	//	color1.g + (color2.g - color1.b) * interpolationValue,
+	//	color1.b + (color2.g - color1.b) * interpolationValue
+	//);
+
+	return sf::Color(
+		(1.f - interpolationValue) * color1.r + interpolationValue * color2.r,
+		(1.f - interpolationValue) * color1.g + interpolationValue * color2.g,
+		(1.f - interpolationValue) * color1.b + interpolationValue * color2.b
+	);
 }

@@ -10,9 +10,14 @@
 
 class MapHandler
 {
-public:
-
 private:
+	//sf::Color plainsColor;
+	//sf::Color shoreColor;
+	//sf::Color mountainColor;
+	//sf::Color mountainPeakColor;
+	//sf::Color seaColor;
+	//sf::Color deepSeaColor;
+
 	std::vector<std::vector<float>> map;
 	std::vector<POI> pointsOfInterests;
 
@@ -39,4 +44,6 @@ public:
 	std::vector<POI> getPOIs();
 
 	float getCellSize();
+
+	void generateColorInterpolationTexture();
 };
