@@ -1,3 +1,10 @@
+/**
+* @file MapHandler.cpp
+* @brief Implementation of the MapHandler class
+*
+* This class handles the map drawing process and elaboration including the POI generation
+*/
+
 #include "MapHandler.h"
 #include "MapGenerator.h"
 #include "POI.h"
@@ -29,6 +36,9 @@ MapHandler::MapHandler(const int& sizeX, const int& sizeY) {
 	vertices_map.resize(sizeX * sizeY * 4);
 }
 
+/**
+* @brief Generate the vertex map inside a VertexArray
+*/
 void MapHandler::generateVertexMap() {
 	sf::Color tileColor;
 
@@ -44,6 +54,7 @@ void MapHandler::generateVertexMap() {
 	{
 		for (size_t y = 0; y < sizeY; y++)
 		{
+			//generates a cell inside the map 4 using vertices
 			sf::Vertex* quad = &vertices_map[(x + y * sizeY) * 4];
 
 			quad[0].position = sf::Vector2f(x * cellSize, y * cellSize);
@@ -51,11 +62,9 @@ void MapHandler::generateVertexMap() {
 			quad[2].position = sf::Vector2f((x + 1) * cellSize, (y + 1) * cellSize);
 			quad[3].position = sf::Vector2f(x * cellSize, (y + 1) * cellSize);
 
+			//assing the generated cell a color based on it's float value 
+			
 			float mapValue = map[x][y];
-
-			//if(map[x][y] == 10)
-			//	tileColor = sf::Color(255, 0, 0);
-
 			float val = map[x][y];
 			//land
 			float landSize = 1 - baseCellValue;
@@ -98,6 +107,9 @@ void MapHandler::generateVertexMap() {
 	}
 }
 
+/**
+* @brief Draws the map stored inside the VertexArray into a RenderTexture
+*/
 void MapHandler::generateMap() {
 	MapGenerator MG;
 
@@ -123,6 +135,10 @@ void MapHandler::generateMap() {
 		thread.join();
 }
 
+/**
+* @brief Generates random points of interest on the map
+* @param amount The amount of point of interest to generate
+*/
 void MapHandler::generatePOIset(const int& amount) {
 	srand(time(NULL));
 	for (int i = 0; i < amount; i++)
@@ -141,24 +157,49 @@ void MapHandler::generatePOIset(const int& amount) {
 	}
 }
 
+/**
+* @brief Deletes all points of interest on the map
+*/
 void MapHandler::deletePOIset() {
 	pointsOfInterests.clear();
 }
 
+/**
+* @brief Get the amount of points of interest on the map
+* @return amount of points of interest
+*/
 int MapHandler::getPOIamount() {
 	return pointsOfInterests.size();
 }
 
+/**
+* @brief Get a reference of the points of interest on the map
+* @return Vector containing all the points of interest
+*/
 std::vector<POI> MapHandler::getPOIs() {
 	return pointsOfInterests;
 }
 
+/**
+* @brief Get a reference of the points of interest on the map
+* @return Single cell size
+*/
 float MapHandler::getCellSize() {
 	return cellSize;
 }
 
 
 //internal functions implementation
+
+/**
+* @brief Generates a portion of the map and adds noise for improved looks
+* @param MG instance of the map generator passed by reference
+* @param map instance of the map passed by reference
+* @param fromX starting point on the x axis passed by reference
+* @param toX ending point on the x axis passed by reference
+* @param fromY starting point on the y axis passed by reference
+* @param toY ending point on the y axis passed by reference
+*/
 void generateMapSlice(MapGenerator& MG, std::vector<std::vector<float>>& map, const int& fromX, const int& toX, const int& fromY, const int& toY) {
 	for (int x = fromX; x < toX; x++)
 	{
@@ -183,35 +224,48 @@ void generateMapSlice(MapGenerator& MG, std::vector<std::vector<float>>& map, co
 				n = .0f;
 
 			map[x][y] = n;
-
 		}
 	}
 }
 
+/**
+* @brief Calculate the Size for each pixel on the map
+* @param sizeX width of the map
+* @param sizeY height of the map
+* @return The value of cellSize
+*/
 float calculateCellSize(const int& sizeX, const int& sizeY) {
 	float cellSize = 2;
 	
+	//TODO:
 	//do something for dynamic size based on map dimension
 	//or implement map navigation with static window size
 
 	return cellSize;
 }
 
-//should return the value from the min max range in normalized form 0-1
+/**
+* @brief Calculate the passed value inside a range of 0 and 1 
+* @param min min value of the range
+* @param max max value of the range
+* @return The normalized value inside of a range from 0 to 1
+*/
 float linearMapValue(float min, float max, float value) {
+	//should return the value from the min max range in normalized form 0-1
 	float mapRangeMin = 0;
 	float mapRangeMax = 1;
 
 	return mapRangeMin + ((mapRangeMax - mapRangeMin) / (max - min)) * (value - min);
 }
 
+/**
+* @brief Calculate the color interpolation between two colors
+* @param color1 first color 
+* @param color2 second color
+* @interpolationValue interpolation strenght
+* @return The new color generated from the interpolation
+*/
 sf::Color interpolateColor(sf::Color color1, sf::Color color2, float interpolationValue) {
-	//return sf::Color(
-	//	color1.r + (color2.r - color1.r) * interpolationValue,
-	//	color1.g + (color2.g - color1.b) * interpolationValue,
-	//	color1.b + (color2.g - color1.b) * interpolationValue
-	//);
-
 	return sf::Color(
 		(1.f - interpolationValue) * color1.r + interpolationValue * color2.r,
 		(1.f - interpolationValue) * color1.g + interpolationValue * color2.g,

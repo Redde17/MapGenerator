@@ -10,11 +10,15 @@
 using namespace std::chrono_literals;
 using std::chrono::duration;
 using std::chrono::high_resolution_clock;
+
+//map size 
 #define MAP_X 500
 #define MAP_Y 500
 
 MapHandler MH(MAP_X, MAP_Y);
 LogisticHandler LH;
+
+//starting values for ImGui windows
 float tempBaseCellValue = 0.45f;
 int POIsetSize = 10;
 int POIamount = 0;
@@ -113,7 +117,7 @@ void initMap(MapHandler& MH) {
     std::cout << "vertices map generation time: " << ms_double.count() << "ms\n";
 }
 
-const char* items[] = { "Hierarchical", "K-means" };
+const char* items[] = {"K-means" };
 static const char* currentItem = items[0];
 
 void imGuiMapToolsSet() {
@@ -170,10 +174,7 @@ void imGuiMapToolsSet() {
     }
 
     if (ImGui::Button("generate cluster")) {
-        if (currentItem == items[0])
-            //generate Hierarchical cluster
-            LH.generateCluster(LogisticHandler::ClusterType::HIERARCHICAL, MH.getPOIs());
-        else if(currentItem == items[1])
+        if(currentItem == items[0])
             //generte K-means cluster
             LH.generateCluster(LogisticHandler::ClusterType::K_MEANS, MH.getPOIs());
     }

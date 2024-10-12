@@ -1,3 +1,10 @@
+/**
+* @file MapGenerator.cpp
+* @brief Implementation of the perlin noise algorithm
+* 
+* This class implements all the necessary functions to generate perlin noise
+*/
+
 #include "MapGenerator.h"
 #include <corecrt_math.h>
 

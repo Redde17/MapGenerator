@@ -22,16 +22,19 @@
     <Filter Include="Source Files\ImGUI classes">
       <UniqueIdentifier>{66c9c7bb-9c5e-4564-8d0d-0564a16c719f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Classes\MapClasses">
+      <UniqueIdentifier>{30a930d9-c050-43a8-af20-2942c116a42e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Classes\LogisticClasses">
+      <UniqueIdentifier>{2f2e6165-cc11-4f30-9533-8ebcf2085ee1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Classes\CommonClasses">
+      <UniqueIdentifier>{69f07064-3774-4d6c-9c96-39a37581500f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MapHandler.cpp">
-      <Filter>Source Files\Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="MapGenerator.cpp">
-      <Filter>Source Files\Classes</Filter>
     </ClCompile>
     <ClCompile Include="imgui\imgui-SFML.cpp">
       <Filter>Source Files\ImGUI classes</Filter>
@@ -48,20 +51,20 @@
     <ClCompile Include="imgui\imgui_widgets.cpp">
       <Filter>Source Files\ImGUI classes</Filter>
     </ClCompile>
-    <ClCompile Include="LogisticHandler.cpp">
-      <Filter>Source Files\Classes</Filter>
+    <ClCompile Include="MapGenerator.cpp">
+      <Filter>Source Files\Classes\MapClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="MapHandler.cpp">
+      <Filter>Source Files\Classes\MapClasses</Filter>
     </ClCompile>
     <ClCompile Include="ClusterGenerator.cpp">
-      <Filter>Source Files\Classes</Filter>
+      <Filter>Source Files\Classes\LogisticClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="LogisticHandler.cpp">
+      <Filter>Source Files\Classes\LogisticClasses</Filter>
     </ClCompile>
     <ClCompile Include="POI.cpp">
-      <Filter>Source Files\Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="ClusterTree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Cluster.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Classes\CommonClasses</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

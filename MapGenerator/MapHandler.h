@@ -1,3 +1,8 @@
+/**
+* @file MapHandler.h
+*
+*/
+
 #pragma once
 
 #include "GlobalInclude.h"
@@ -11,13 +16,6 @@
 class MapHandler
 {
 private:
-	//sf::Color plainsColor;
-	//sf::Color shoreColor;
-	//sf::Color mountainColor;
-	//sf::Color mountainPeakColor;
-	//sf::Color seaColor;
-	//sf::Color deepSeaColor;
-
 	std::vector<std::vector<float>> map;
 	std::vector<POI> pointsOfInterests;
 
@@ -30,20 +28,15 @@ public:
 	float baseCellValue;
 	sf::RenderTexture mapTexture;
 	sf::VertexArray vertices_map;
-
 	sf::RenderTexture colorInterpolationTexture;
 
-	//MapHandler();
 	MapHandler(const int &sizeX, const int& sizeY);
-
 	void generateVertexMap();
 	void generateMap();
 	void generatePOIset(const int& amount);
 	void deletePOIset();
 	int getPOIamount();
 	std::vector<POI> getPOIs();
-
 	float getCellSize();
-
 	void generateColorInterpolationTexture();
 };

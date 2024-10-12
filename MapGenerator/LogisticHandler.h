@@ -7,7 +7,6 @@ class LogisticHandler
 {
 public:
 	enum ClusterType {
-		HIERARCHICAL,
 		K_MEANS
 	};
 
