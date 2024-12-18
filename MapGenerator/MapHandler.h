@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "Cluster.h"
 #include "GlobalInclude.h"
 #include "POI.h"
 
@@ -17,7 +18,11 @@ class MapHandler
 {
 private:
 	std::vector<std::vector<float>> map;
-	std::vector<POI> pointsOfInterests;
+
+	//std::vector<POI> pointsOfInterests;
+	//Cluster poiCluster;
+
+	std::vector<Cluster*> clusters;
 
 	sf::RectangleShape* tile;
 
@@ -33,10 +38,18 @@ public:
 	MapHandler(const int &sizeX, const int& sizeY);
 	void generateVertexMap();
 	void generateMap();
-	void generatePOIset(const int& amount);
-	void deletePOIset();
-	int getPOIamount();
-	std::vector<POI> getPOIs();
+
+	void addCluster(Cluster *cluster);
+	void removeCluster(int i);
+	void removeAllClusters();
+	Cluster* getCluster(int i) const;
+	std::vector<Cluster*>* getAllClusters();
+
+	int getClustersAmount() const;
+	int getPointsAmount() const;
+
+	void generateRandomCluster(int size);
+
 	float getCellSize();
 	void generateColorInterpolationTexture();
 };

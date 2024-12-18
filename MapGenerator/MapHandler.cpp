@@ -6,9 +6,14 @@
 */
 
 #include "MapHandler.h"
+
+#include <random>
+
 #include "MapGenerator.h"
 #include "POI.h"
 #include <thread>
+
+#include "ColorGenerator.h"
 
 //internal functions signature
 void generateMapSlice(MapGenerator& MG, std::vector<std::vector<float>>& map, const int& fromX, const int& toX, const int& fromY, const int& toY);
@@ -19,6 +24,8 @@ sf::Color interpolateColor(sf::Color color1, sf::Color color2, float interpolati
 //public functions
 
 MapHandler::MapHandler(const int& sizeX, const int& sizeY) {
+	srand(time(NULL));
+
 	baseCellValue = 0.45f;
 
 	this->sizeX = sizeX;
@@ -63,14 +70,14 @@ void MapHandler::generateVertexMap() {
 			quad[3].position = sf::Vector2f(x * cellSize, (y + 1) * cellSize);
 
 			//assing the generated cell a color based on it's float value 
-			
+
 			float mapValue = map[x][y];
 			float val = map[x][y];
 			//land
 			float landSize = 1 - baseCellValue;
 			if (val >= baseCellValue + (landSize * .85f)) //10% of landSize
 				tileColor = mountainPeakColor;
-			else if(val >= baseCellValue + (landSize * .8f)) //10% of landSize
+			else if (val >= baseCellValue + (landSize * .8f)) //10% of landSize
 				tileColor = interpolateColor(mountainColor, mountainPeakColor, linearMapValue(baseCellValue + (landSize * .8f), baseCellValue + (landSize * .9f), val));
 			else if (val >= baseCellValue + (landSize * .5f)) //30% of landSize
 				tileColor = mountainColor;
@@ -97,13 +104,20 @@ void MapHandler::generateVertexMap() {
 
 	//POI set generation
 	tileColor = sf::Color(255, 0, 0);
-	for (auto poi : pointsOfInterests) {
-		sf::Vertex* quad = &vertices_map[(poi.x + poi.y * sizeY) * 4];
+	for (Cluster* cluster : clusters)
+	{
+		tileColor = cluster->getClusterColor();
+		std::list<POI*>* poiList = cluster->getPoints();
+		for (POI* poi : *poiList)
+		{
+			sf::Vertex* quad = &vertices_map[(poi->getX() + poi->getY() * sizeY) * 4];
+
+			quad[0].color = tileColor;
+			quad[1].color = tileColor;
+			quad[2].color = tileColor;
+			quad[3].color = tileColor;
+		}
 		
-		quad[0].color = tileColor;
-		quad[1].color = tileColor;
-		quad[2].color = tileColor;
-		quad[3].color = tileColor;
 	}
 }
 
@@ -120,9 +134,9 @@ void MapHandler::generateMap() {
 
 	for (size_t i = 0; i < THREADS_FOR_GENERATION; i++) {
 		threads.push_back(std::thread(
-			generateMapSlice, 
-			std::ref(MG), 
-			std::ref(map), 
+			generateMapSlice,
+			std::ref(MG),
+			std::ref(map),
 			startX, finishX,
 			0, sizeY));
 
@@ -136,12 +150,82 @@ void MapHandler::generateMap() {
 }
 
 /**
-* @brief Generates random points of interest on the map
-* @param amount The amount of point of interest to generate
+* @brief Adds a cluster to the vector of clusters on the map
 */
-void MapHandler::generatePOIset(const int& amount) {
-	srand(time(NULL));
-	for (int i = 0; i < amount; i++)
+void MapHandler::addCluster(Cluster* cluster) {
+	clusters.push_back(cluster);
+}
+
+/**
+* @brief Removes a cluster from the vector of clusters on the map
+* @param i Index of the cluster to be removed
+*/
+void MapHandler::removeCluster(int i) {
+	ColorGenerator* CG = ColorGenerator::getInstance();
+
+	CG->freeColor(clusters.at(i)->getClusterColor());
+	clusters.erase(clusters.begin() + i);
+}
+
+/**
+* @brief Removes all clusters from the vector of clusters on the map
+*/
+void MapHandler::removeAllClusters(){
+	ColorGenerator* CG = ColorGenerator::getInstance();
+
+	for (auto cluster : clusters) {
+		CG->freeColor(clusters.back()->getClusterColor());
+		clusters.pop_back();
+	}
+}
+
+/**
+* @brief Gets a cluster from the vector of clusters on the map
+* @param i Index of the cluster to get
+*/
+Cluster* MapHandler::getCluster(int i) const {
+	return clusters[i];
+}
+
+/**
+* @brief Gets the vector of clusters on the map
+*/
+std::vector<Cluster*>* MapHandler::getAllClusters() {
+	return &clusters;
+}
+
+/**
+* @brief Return the amount of clusters in the clusters vector
+*/
+int MapHandler::getClustersAmount() const {
+	return clusters.size();
+}
+
+/**
+* @brief Calculates the amount of points of interest in all the clusters
+* @return An integer representing the total amount od points of interest
+*/
+int MapHandler::getPointsAmount() const {
+	int amount = 0;
+	for (Cluster* cluster : clusters)
+		amount += cluster->getPointsAmount();
+
+	return amount;
+}
+
+/**
+* @brief Generates a random cluster of points of interest
+* @param size amount od POI inside the cluster
+*/
+//TODO:Implement cluster generation
+void MapHandler::generateRandomCluster(int size) {
+	Cluster* cluster = new Cluster();
+
+	ColorGenerator* CG = ColorGenerator::getInstance();
+	cluster->setClusterColor(*CG->generateColor());
+
+	//generate random POIs and add them to the cluster
+	for (int i = 0; i < size; i++)
 	{
 		int x = rand() % sizeX;
 		int y = rand() % sizeY;
@@ -152,33 +236,14 @@ void MapHandler::generatePOIset(const int& amount) {
 			continue;
 		}
 
-		pointsOfInterests.push_back(*new POI(x, y));
+		cluster->addPoint(*new POI(x, y));
 		//map[x][y] = 10;
 	}
+
+	addCluster(cluster);
 }
 
-/**
-* @brief Deletes all points of interest on the map
-*/
-void MapHandler::deletePOIset() {
-	pointsOfInterests.clear();
-}
 
-/**
-* @brief Get the amount of points of interest on the map
-* @return amount of points of interest
-*/
-int MapHandler::getPOIamount() {
-	return pointsOfInterests.size();
-}
-
-/**
-* @brief Get a reference of the points of interest on the map
-* @return Vector containing all the points of interest
-*/
-std::vector<POI> MapHandler::getPOIs() {
-	return pointsOfInterests;
-}
 
 /**
 * @brief Get a reference of the points of interest on the map
@@ -236,7 +301,7 @@ void generateMapSlice(MapGenerator& MG, std::vector<std::vector<float>>& map, co
 */
 float calculateCellSize(const int& sizeX, const int& sizeY) {
 	float cellSize = 2;
-	
+
 	//TODO:
 	//do something for dynamic size based on map dimension
 	//or implement map navigation with static window size
@@ -245,7 +310,7 @@ float calculateCellSize(const int& sizeX, const int& sizeY) {
 }
 
 /**
-* @brief Calculate the passed value inside a range of 0 and 1 
+* @brief Calculate the passed value inside a range of 0 and 1
 * @param min min value of the range
 * @param max max value of the range
 * @return The normalized value inside of a range from 0 to 1
@@ -260,7 +325,7 @@ float linearMapValue(float min, float max, float value) {
 
 /**
 * @brief Calculate the color interpolation between two colors
-* @param color1 first color 
+* @param color1 first color
 * @param color2 second color
 * @interpolationValue interpolation strenght
 * @return The new color generated from the interpolation

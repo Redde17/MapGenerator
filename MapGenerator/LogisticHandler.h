@@ -3,16 +3,11 @@
 #include "POI.h"
 #include <vector>
 
+#include "Cluster.h"
+
 class LogisticHandler
 {
 public:
-	enum ClusterType {
-		K_MEANS
-	};
-
-	//generate cluster
-	void generateCluster(ClusterType clusterType, std::vector<POI> pointsOfInterests);
-
 	//generate roads
 
 	//generate logistic map layer

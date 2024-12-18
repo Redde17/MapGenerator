@@ -3,8 +3,8 @@
 #include <vector>
 #include "ClusterTree.h"
 
-static class ClusterGenerator{
+class ClusterGenerator{
 public:
 	//K-means cluster generation
-	static void getK_MeansCluster(std::vector<POI> &pointsOfInterests);
+	void generateCluster();
 };

@@ -133,12 +133,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Cluster.cpp" />
     <ClCompile Include="ClusterGenerator.cpp" />
+    <ClCompile Include="ColorGenerator.cpp" />
     <ClCompile Include="imgui\imgui-SFML.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="KMeansClusterGenerator.cpp" />
     <ClCompile Include="LogisticHandler.cpp" />
     <ClCompile Include="MapGenerator.cpp" />
     <ClCompile Include="MapHandler.cpp" />
@@ -148,7 +151,7 @@
   <ItemGroup>
     <ClInclude Include="Cluster.h" />
     <ClInclude Include="ClusterGenerator.h" />
-    <ClInclude Include="ClusterTree.h" />
+    <ClInclude Include="ColorGenerator.h" />
     <ClInclude Include="GlobalInclude.h" />
     <ClInclude Include="imgui\imconfig-SFML.h" />
     <ClInclude Include="imgui\imconfig.h" />
@@ -159,6 +162,7 @@
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="KMeansClusterGenerator.h" />
     <ClInclude Include="LogisticHandler.h" />
     <ClInclude Include="MapGenerator.h" />
     <ClInclude Include="MapHandler.h" />

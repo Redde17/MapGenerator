@@ -7,6 +7,8 @@
 #include <thread>
 #include <fstream>
 
+#include "imgui/imgui.h"
+
 using namespace std::chrono_literals;
 using std::chrono::duration;
 using std::chrono::high_resolution_clock;
@@ -22,6 +24,7 @@ LogisticHandler LH;
 float tempBaseCellValue = 0.45f;
 int POIsetSize = 10;
 int POIamount = 0;
+int clustersAmount = 0;
 bool vertexMapChanged = false;
 
 void initMap(MapHandler& MH);
@@ -33,7 +36,8 @@ int main() {
     sf::RenderWindow mainWindow(sf::VideoMode(1000, 800), "MapGenerator");
 
     initMap(MH);
-    int POIamount = MH.getPOIamount();
+    int POIamount = MH.getPointsAmount();
+    clustersAmount = MH.getClustersAmount();
 
     ImGui::SFML::Init(mainWindow);
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -104,11 +108,11 @@ void initMap(MapHandler& MH) {
     std::cout << "Map generation time: " << ms_double.count() << "ms\n";
 
     t1 = high_resolution_clock::now();
-    MH.generatePOIset(100);
+    MH.generateRandomCluster(100);
     t2 = high_resolution_clock::now();
     ms_double = t2 - t1;
     std::cout << "POI generation time: " << ms_double.count() << "ms\n";
-    POIamount = MH.getPOIamount();
+    POIamount = MH.getPointsAmount();
 
     t1 = high_resolution_clock::now();
     MH.generateVertexMap();
@@ -125,18 +129,18 @@ void imGuiMapToolsSet() {
     ImGui::SliderFloat("Land/Sea Ratio", &tempBaseCellValue, 0.0f, 1.0f);
     ImGui::InputInt("POIs set size", &POIsetSize, 1);
     if (ImGui::Button("Generate new POI set")) {
-        MH.generatePOIset(POIsetSize);
+        MH.generateRandomCluster(POIsetSize);
         vertexMapChanged = true;
     }
 
     if (ImGui::Button("Delete all POIs")) {
-        MH.deletePOIset();
+        MH.removeAllClusters();
         vertexMapChanged = true;
     }
 
     if (ImGui::Button("Generate new Map")) {
         MH.generateMap();
-        MH.deletePOIset();
+        MH.removeAllClusters();
         vertexMapChanged = true;
     }
 
@@ -150,12 +154,14 @@ void imGuiMapToolsSet() {
     if (vertexMapChanged) {
         vertexMapChanged = false;
         MH.generateVertexMap();
-        POIamount = MH.getPOIamount();
+        POIamount = MH.getPointsAmount();
+        clustersAmount = MH.getClustersAmount();
     }
 
     ImGui::Begin("Stats");
     ImGui::Text("Size:\n %d x %d\n", MAP_X, MAP_Y);
     ImGui::Text("Points Of Interest:\n %d\n", POIamount);
+    ImGui::Text("Clusters:\n %d\n", clustersAmount);
     ImGui::End();
 
     ImGui::Begin("Clustering tools");
@@ -174,9 +180,9 @@ void imGuiMapToolsSet() {
     }
 
     if (ImGui::Button("generate cluster")) {
-        if(currentItem == items[0])
+        if(currentItem == items[0]){}
             //generte K-means cluster
-            LH.generateCluster(LogisticHandler::ClusterType::K_MEANS, MH.getPOIs());
+            //LH.generateCluster(LogisticHandler::ClusterType::K_MEANS, MH.getPOIs());
     }
 
     ImGui::End();

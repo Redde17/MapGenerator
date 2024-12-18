@@ -66,6 +66,15 @@
     <ClCompile Include="POI.cpp">
       <Filter>Source Files\Classes\CommonClasses</Filter>
     </ClCompile>
+    <ClCompile Include="Cluster.cpp">
+      <Filter>Source Files\Classes\CommonClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="KMeansClusterGenerator.cpp">
+      <Filter>Source Files\Classes\LogisticClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MapHandler.h">
@@ -113,10 +122,13 @@
     <ClInclude Include="POI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ClusterTree.h">
+    <ClInclude Include="Cluster.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Cluster.h">
+    <ClInclude Include="KMeansClusterGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
