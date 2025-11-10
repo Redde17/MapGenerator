@@ -107,7 +107,7 @@ void MapHandler::generateVertexMap() {
 	for (Cluster* cluster : clusters)
 	{
 		tileColor = cluster->getClusterColor();
-		std::list<POI*>* poiList = cluster->getPoints();
+		std::vector<POI*>* poiList = cluster->getPoints();
 		for (POI* poi : *poiList)
 		{
 			sf::Vertex* quad = &vertices_map[(poi->getX() + poi->getY() * sizeY) * 4];

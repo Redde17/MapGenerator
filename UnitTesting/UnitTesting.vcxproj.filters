@@ -5,13 +5,34 @@
     <ClCompile Include="test.cpp">
       <Filter>UnitTestForLogisticComponents</Filter>
     </ClCompile>
+    <ClCompile Include="CLS_test.cpp">
+      <Filter>UnitTestForLogisticComponents\ClusterClassTests</Filter>
+    </ClCompile>
+    <ClCompile Include="CGR_test.cpp">
+      <Filter>UnitTestForLogisticComponents\ColorGenerationTests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="CLS_test.h">
+      <Filter>UnitTestForLogisticComponents\ClusterClassTests</Filter>
+    </ClInclude>
+    <ClInclude Include="CGR_test.h">
+      <Filter>UnitTestForLogisticComponents\ColorGenerationTests</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="UnitTestForLogisticComponents">
       <UniqueIdentifier>{1a85c849-6ed1-430a-bf0e-f2ebd911d88e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UnitTestForLogisticComponents\ClusterClassTests">
+      <UniqueIdentifier>{41336389-85e8-487d-ac01-1533512c284f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UnitTestForLogisticComponents\ColorGenerationTests">
+      <UniqueIdentifier>{c959895e-7c62-42ed-80d7-0a62767cedc9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

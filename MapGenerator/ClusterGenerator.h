@@ -1,10 +1,21 @@
 #pragma once
 #include "POI.h"
 #include <vector>
-#include "ClusterTree.h"
+#include "Cluster.h"
+
 
 class ClusterGenerator{
+private:
+	void generateKmeanClusters(std::list<Cluster*>* clusters, int clustersAmount);
+	std::vector<POI*> getRandomPoints(Cluster* cluster, int amount);
+
+	float getPointsDistance(const POI& a, const POI& b);
+
 public:
-	//K-means cluster generation
-	void generateCluster();
+	enum ClusteringType
+	{
+		K_MEANS
+	};
+
+	void generateClusters(ClusteringType clusteringType, std::list<Cluster*>* clusters, int clustersAmount = 1);
 };

@@ -15,7 +15,7 @@ Cluster::Cluster()
  * The default color for the cluster is Red.
  * @param points list of the POIs to be added to the cluster
  */
-Cluster::Cluster(std::list<POI*>& points)
+Cluster::Cluster(std::vector<POI*>& points)
 {
 	this->points = points;
 
@@ -65,7 +65,7 @@ int Cluster::getPointsAmount() const
 	return points.size();
 }
 
-std::list<POI*>* Cluster::getPoints()
+std::vector<POI*>* Cluster::getPoints()
 {
 	return &points;
 }
@@ -122,19 +122,31 @@ bool Cluster::removePoint(const POI& point)
 {
 	//NEEDS TESTING
 	//try to remove point
-	std::list<POI*>::iterator it = points.begin();
-	while(it != points.end())
-	{
-		if(*it == &point)
-		{
+	//std::list<POI*>::iterator it = points.begin();
+	//while(it != points.end())
+	//{
+	//	if(*it == &point)
+	//	{
+	//		//remove point
+	//		points.remove(*it);
+
+	//		//update centroid 
+	//		updateCentroid();
+	//		return true;
+	//	}
+	//}
+
+	for (int i = 0; i < points.size(); i++) {
+		if (*points[i] == point) {
 			//remove point
-			points.remove(*it);
+			points.erase(points.begin() + i);
 
 			//update centroid 
 			updateCentroid();
 			return true;
 		}
 	}
+
 
 	return false;
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <list>
+#include <vector>
 #include <SFML/Graphics/Color.hpp>
 
 #include "POI.h"
@@ -10,19 +11,19 @@ private:
 	const sf::Color DEFAULT_COLOR = sf::Color(255, 0, 0); //red
 
 	POI* centroid;
-	std::list<POI*> points;
+	std::vector<POI*> points;
 	sf::Color clusterColor;
 	bool autoUpdateCentroid;
 
 	//void updateCentroid(const POI& newPoi);
 public:
 	Cluster();
-	Cluster(std::list<POI*>& points);
+	Cluster(std::vector<POI*>& points);
 
 	~Cluster();
 
 	int getPointsAmount() const;
-	std::list<POI*>* getPoints();
+	std::vector<POI*>* getPoints();
 	POI* getPoint(const int x, const int y) const;
 
 	POI getCentroid() const;

@@ -8,8 +8,6 @@
 class LogisticHandler
 {
 public:
-	//generate roads
 
-	//generate logistic map layer
 };
 
